@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
@@ -12,10 +12,10 @@ function Alerts() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState(null);
 
-  const loadAlerts = async () => {
+  const loadAlerts = useCallback(async () => {
     const data = await apiRequest("/alerts", { token });
     setAlerts(data.alerts);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -27,7 +27,7 @@ function Alerts() {
       logout();
       navigate("/login");
     });
-  }, [isAuthed, navigate, token, logout]);
+  }, [isAuthed, navigate, logout, loadAlerts]);
 
   const handleCreate = async (event) => {
     event.preventDefault();

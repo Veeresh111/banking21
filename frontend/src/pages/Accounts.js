@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
@@ -13,7 +13,7 @@ function Accounts() {
   const [nicknameEdits, setNicknameEdits] = useState({});
   const [status, setStatus] = useState(null);
 
-  const loadAccounts = async () => {
+  const loadAccounts = useCallback(async () => {
     const data = await apiRequest("/accounts", { token });
     setAccounts(data.accounts);
     const editState = {};
@@ -21,7 +21,7 @@ function Accounts() {
       editState[account._id] = account.nickname || "";
     });
     setNicknameEdits(editState);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -33,7 +33,7 @@ function Accounts() {
       logout();
       navigate("/login");
     });
-  }, [isAuthed, navigate, token, logout]);
+  }, [isAuthed, navigate, logout, loadAccounts]);
 
   const handleCreate = async (event) => {
     event.preventDefault();

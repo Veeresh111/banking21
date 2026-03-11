@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
@@ -8,10 +8,10 @@ function Transactions() {
   const { token, isAuthed, logout } = useAuth();
   const [transactions, setTransactions] = useState([]);
 
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     const data = await apiRequest("/transactions", { token });
     setTransactions(data.transactions);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -23,7 +23,7 @@ function Transactions() {
       logout();
       navigate("/login");
     });
-  }, [isAuthed, navigate, token, logout]);
+  }, [isAuthed, navigate, logout, loadTransactions]);
 
   if (!isAuthed) return null;
 

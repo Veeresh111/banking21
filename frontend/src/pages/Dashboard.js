@@ -24,7 +24,7 @@ function Dashboard() {
   const [transferForm, setTransferForm] = useState(initialTransfer);
   const [beneficiaryForm, setBeneficiaryForm] = useState(initialBeneficiary);
   const [actionStatus, setActionStatus] = useState(null);
-  const [activePanel, setActivePanel] = useState("deposit");
+  const activePanel = "deposit";
 
   const canDeposit = accounts.length > 0;
   const canTransfer = accounts.length > 0 && beneficiaries.length > 0;
@@ -158,16 +158,6 @@ function Dashboard() {
     } catch (err) {
       setActionStatus({ type: "error", message: err.message || "Add beneficiary failed." });
     }
-  };
-
-  const handlePanel = async (panel) => {
-    setActivePanel(panel);
-    setActionStatus(null);
-    if (panel === "deposit") await refreshAccounts();
-    if (panel === "transfer") {
-      await Promise.all([refreshAccounts(), refreshBeneficiaries()]);
-    }
-    if (panel === "beneficiary") await refreshBeneficiaries();
   };
 
   if (!isAuthed) return null;

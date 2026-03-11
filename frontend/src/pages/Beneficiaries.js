@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
@@ -13,10 +13,10 @@ function Beneficiaries() {
   const [editingId, setEditingId] = useState(null);
   const [status, setStatus] = useState(null);
 
-  const loadBeneficiaries = async () => {
+  const loadBeneficiaries = useCallback(async () => {
     const data = await apiRequest("/beneficiaries", { token });
     setBeneficiaries(data.beneficiaries);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -28,7 +28,7 @@ function Beneficiaries() {
       logout();
       navigate("/login");
     });
-  }, [isAuthed, navigate, token, logout]);
+  }, [isAuthed, navigate, logout, loadBeneficiaries]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
@@ -12,10 +12,10 @@ function Statements() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState(null);
 
-  const loadStatements = async () => {
+  const loadStatements = useCallback(async () => {
     const data = await apiRequest("/statements", { token });
     setStatements(data.statements);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -27,7 +27,7 @@ function Statements() {
       logout();
       navigate("/login");
     });
-  }, [isAuthed, navigate, token, logout]);
+  }, [isAuthed, navigate, logout, loadStatements]);
 
   const handleGenerate = async (event) => {
     event.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
@@ -12,10 +12,10 @@ function Loans() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState(null);
 
-  const loadLoans = async () => {
+  const loadLoans = useCallback(async () => {
     const data = await apiRequest("/loans", { token });
     setLoans(data.loans);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -27,7 +27,7 @@ function Loans() {
       logout();
       navigate("/login");
     });
-  }, [isAuthed, navigate, token, logout]);
+  }, [isAuthed, navigate, logout, loadLoans]);
 
   const handleApply = async (event) => {
     event.preventDefault();

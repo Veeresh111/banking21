@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
@@ -14,7 +14,7 @@ function Transfers() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const [accountData, beneficiaryData, transferData] = await Promise.all([
       apiRequest("/accounts", { token }),
       apiRequest("/beneficiaries", { token }),
@@ -23,7 +23,7 @@ function Transfers() {
     setAccounts(accountData.accounts);
     setBeneficiaries(beneficiaryData.beneficiaries);
     setTransfers(transferData.transfers);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -35,7 +35,7 @@ function Transfers() {
       logout();
       navigate("/login");
     });
-  }, [isAuthed, navigate, token, logout]);
+  }, [isAuthed, navigate, logout, loadData]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();

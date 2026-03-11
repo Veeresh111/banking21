@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import { useAuth } from "../context/AuthContext";
@@ -13,7 +13,7 @@ function Cards() {
   const [limitEdits, setLimitEdits] = useState({});
   const [status, setStatus] = useState(null);
 
-  const loadCards = async () => {
+  const loadCards = useCallback(async () => {
     const data = await apiRequest("/cards", { token });
     setCards(data.cards);
     const editState = {};
@@ -21,7 +21,7 @@ function Cards() {
       editState[card._id] = card.limit;
     });
     setLimitEdits(editState);
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!isAuthed) {
@@ -33,7 +33,7 @@ function Cards() {
       logout();
       navigate("/login");
     });
-  }, [isAuthed, navigate, token, logout]);
+  }, [isAuthed, navigate, logout, loadCards]);
 
   const handleIssue = async (event) => {
     event.preventDefault();
